@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+big_base_datos_2008.csv
 
 # C extensions
 *.so
