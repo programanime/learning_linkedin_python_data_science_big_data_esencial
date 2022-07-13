@@ -1,7 +1,8 @@
 # In[ ]:
 from turtle import title
 import pandas as pd
-df  =  pd.read_csv("base_datos_2008.csv")
+df  =  pd.read_csv("base_datos_2008.csv", nrows=400000)
+df.to_csv('base_datos_2008.csv')
 
 # In[ ]:
 """np.corrcoef"""
