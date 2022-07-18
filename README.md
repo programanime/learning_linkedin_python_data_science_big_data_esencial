@@ -1,8 +1,7 @@
-# learning_linkedin_python_data_science_big_data_esencial
-
 # ds
 [repo](https://github.com/programanime/learning_linkedin_python_data_science_big_data_esencial)   
 [tutorial](https://www.linkedin.com/learning/python-para-data-science-y-big-data-esencial)  
+[matplotlib](https://matplotlib.org/)
 
 # big data needs
 - depends of the epoch
@@ -572,3 +571,1021 @@ if __name__ == '__main__':
 ```
 ### conclusions
   - you need to enclose the function in the main condition, to avoid spawned process to run several times
+
+
+# matplotlib
+
+## pie chart
+```python
+import pandas as pd
+import numpy as np
+df  =  pd.read_csv("base_datos_2008.csv")
+data = np.unique(df.Cancelled, return_counts=True)
+data[1].head()
+plt.pie(x=data[1], labels=data[0], autopct='%1.1f%%', colors = ["red", "green"], shadow=True, startangle = 90, radius = 1.1)
+plt.show()
+```
+### conclusions
+  - pie chart just need x data and labels
+  - useful for categorical or numerical values
+
+## plt burble chart
+```python
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+np.random.seed(0)
+df  =  pd.read_csv("base_datos_2008.csv")
+df  = df.sample(frac=1).head(100)
+plt.scatter(
+   x = df.DayofMonth, 
+   y = df.ArrDelay, 
+   s = df.Distance, 
+   alpha = .3,
+   c = df.DayOfWeek.isin([6,7])
+)
+plt.xlabel("dia del mes")
+plt.ylabel("retraso al llegar")
+plt.xticks([0,15,30])
+plt.yticks([0,10,30])
+plt.text(x=1, y=200, s = "mi fly")
+plt.show()
+```
+### conclusions
+useful for three dimensions
+x, y and size of bubble is the depth
+
+# pie chart
+```python
+import pandas as pd
+import numpy as np
+plt.pie(
+   x=[2,1,2,2,50,100], 
+   labels=["auto", "a", "a", "a", "a", "a"], 
+   autopct='%1.1f%%', 
+   colors = sns.color_palette("hls", 7), 
+   shadow=True, 
+   startangle = 90, 
+   explode = (0,0,0.2,0,0,0.1),
+   labeldistance = 1,
+   radius = 1.1
+)
+plt.legend(labels = ["auto", "a"])
+plt.show()
+```
+### conclusions
+  - i does not matter if the label is repeat
+  - it takes the summary
+
+# barplot
+```python
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+df  =  pd.read_csv("base_datos_2008.csv")
+ax = sns.barplot(x="DayOfWeek", y="ArrDelay", data=df)
+ax.set(xlabel="dia de la semana", ylabel="retraso al llegar")
+plt.show()
+```
+
+### conclusions
+you could a dataframe, indicate the X and Y column name,
+then a data object besides with them
+
+```python
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import time
+import datetime
+df  =  pd.read_csv("base_datos_2008.csv")
+times = []
+
+for i in np.arange(len(df)):
+   times.append(datetime.datetime(year=2008, month=df.Month[i], day=df.DayofMonth[i]))
+
+df["Time"] = times
+
+data = df.groupby("Time", as_index=False).agg({"ArrDelay": "mean", "DepDelay": "mean"})
+data.head()
+sns.lineplot(data["Time"], data["DepDelay"])
+sns.lineplot(data["Time"], data["ArrDelay"])
+plt.show()
+
+sns.lineplot(data = data)
+plt.show()
+
+sns.lineplot(x="Time", y="ArrDelay", hue="Origin", data=df[df.Origin.isin(["ATL", "HOU", "IND"])])
+plt.show()
+```
+
+### conclusions
+- hue = useful for draw several lines with different colors
+- lineplot, (x and y as names) and pass data for extract both values
+- datetime.datetime
+- groupby as_index=False, to generate a new index
+
+# plotting several plots using sns
+## plotting distribution of one variable
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4.5),tight_layout=True, sharey=True)
+df  =  pd.read_csv("base_datos_2008.csv")
+df.dropna(inplace=True, subset = ["ArrDelay", "DepDelay", "Distance"])
+
+sns.distplot(df["Distance"], ax=ax1)
+sns.distplot(df["ArrDelay"], ax=ax2)
+plt.show()
+```
+### conclusions
+- sns.displot(ax=axis)
+   - you should pass ax as axis to plot the figure
+
+
+# plotting several plots
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(9, 4.5),tight_layout=True, sharey=True)
+df  =  pd.read_csv("base_datos_2008.csv").head(500)
+df.dropna(inplace=True, subset = ["ArrDelay", "DepDelay", "Distance"])
+ax1.scatter(x=df.index, y=df["ArrDelay"])
+ax2.scatter(x=df.index, y=df["DepDelay"])
+ax3.scatter(x=df.index, y=df["Distance"])
+plt.show()
+```
+### conclusions
+- axis comes from plt, then you could use any of these methods
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4.5),tight_layout=True, sharey=True)
+df  =  pd.read_csv("base_datos_2008.csv")
+df.dropna(inplace=True, subset = ["ArrDelay", "DepDelay", "Distance"])
+
+sns.distplot(df["Distance"], ax=ax1)
+sns.distplot(df["ArrDelay"], ax=ax2)
+plt.show()
+```
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+df  =  pd.read_csv("base_datos_2008.csv")
+sns.kdeplot(df["ArrDelay"])
+sns.kdeplot(df["DepDelay"])
+plt.show()
+```
+
+# boxplot with sns
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+df  =  pd.read_csv("base_datos_2008.csv")
+df2 = df[df.Origin.isin(["ATL", "HOU", "IND"])].sample(frac=1)
+sns.boxplot(x="DepDelay", y = "Origin", data = df2)
+plt.show()
+```
+### conclusions
+x = data
+y = subdivision
+
+# scatter plot with sns
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+df  =  pd.read_csv("base_datos_2008.csv")
+df.dropna(inplace=True, subset = ["ArrDelay", "DepDelay", "Distance", "AirTime"])
+df2 = df[df.Origin.isin(["ATL", "HOU", "IND"])].sample(frac=1).head(5000)
+sns.jointplot(df2["DepDelay"], df2["ArrDelay"])
+
+df3 = df2[np.abs(df2["DepDelay"])<40]
+df3 = df3[np.abs(df3["ArrDelay"])<40]
+
+sns.jointplot(df3["DepDelay"], df3["ArrDelay"], kind="hex")
+sns.jointplot(df3["DepDelay"], df3["ArrDelay"], kind="kde")
+
+plt.show()
+```
+
+### conclusions
+- scatter plot with histograms for each variable
+- hive plot and histograms for each variable
+- it could be hive or difussion
+
+# heatmap con sns
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+df  =  pd.read_csv("base_datos_2008.csv")
+pivoted_df = pd.pivot_table(data = df, index = "Month", columns="Origin", values="Distance")
+sns.heatmap(pivoted_df, cmap="coolwarm")
+plt.show()
+```
+### conclusions
+- good way to visualize three variables in a two dimensional chart
+- good way to visualize geographical points
+
+# machine learning
+![](img/supervisado_no_supervisado.png)  
+## supervisado
+modela, se tiene Y, describe una relacion
+## no supervisado
+clusteriza, no se tiene Y, algunos son generativos
+
+# problema supervisado
+- 3 productos, informacion de clientes y productos que se le ofrece, tratar de predecir el mejor producto
+basado en la info del cliente
+   - encuentra modelos explicativos
+
+# problema no supervisado
+- tenemos miles de clientes y necesitamos definir 3 nuevos productos
+   - encuentra grupos similares
+
+# preprocesssing
+
+```python
+from sklearn import preprocessing
+import pandas as pd
+import numpy as np
+df  =  pd.read_csv("base_datos_2008.csv")
+df = df[["ArrDelay", "DepDelay", "Distance", "AirTime"]].dropna()
+df.head()
+x_scaled = preprocessing.scale(df)
+x_scaled.mean(axis=0)
+```
+### conclusions
+normalize the whole dataset using normal distribution or z-score
+
+```python
+from sklearn import preprocessing
+import pandas as pd
+import numpy as np
+df = pd.read_csv("base_datos_2008.csv")
+df = df[["ArrDelay", "DepDelay", "Distance", "AirTime"]].dropna()
+df.dropna(inplace=True)
+min_max_scaler = preprocessing.MinMaxScaler([0,10])
+x_train = min_max_scaler.fit_transform(df)
+x_train.mean(axis = 0)
+```
+### conclusions
+- make sure all your variables are numerical variables
+- select a min, max and all your values will be between those values, keeping the relationship
+
+```python
+from sklearn import preprocessing
+import pandas as pd
+import numpy as np
+df = pd.read_csv("base_datos_2008.csv")
+df = df.dropna(subset=["Origin"])
+dummies = pd.get_dummies(df, columns=["Origin"])
+dummies.head()
+```
+
+# k-means
+![](img/80171.png)  
+- split data in n groups, each groups with the same variance.
+- los nuevos puntos se asignan al centroide mas cercano
+
+# k-means errors
+![](img/kmeans_errors.png)  
+you could run in troubles in the following situations:
+1. wrong number of clusters.
+2. there is not way to separate the data with the same variance.
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("base_datos_2008.csv", nrows = 10000)
+def train_kmeans(df, columns, clusters):
+   df = df[columns].dropna()
+   x_train, x_test = train_test_split(df[columns], random_state=0, test_size=0.2)
+   model_kmeans = KMeans(n_clusters=clusters, random_state=0)
+   model_kmeans.fit(x_train)
+   model_kmeans.cluster_centers_
+   predictions = model_kmeans.predict(x_test)
+   label_counts = np.unique(model_kmeans.labels_, return_counts=True)
+   print(f"label counts {label_counts}")
+   print(f"labels : {model_kmeans.labels_}")
+   print(f"predictions : {predictions[:50]}")
+   plt.scatter(x_train[columns[0]], x_train[columns[1]], c=model_kmeans.labels_)
+   plt.show()  
+
+columns = ["AirTime", "Distance", "TaxiOut", "ArrDelay", "DepDelay"]
+train_kmeans(df, columns, clusters=2)
+train_kmeans(df, columns, clusters=3)
+train_kmeans(df, columns, clusters=4)
+train_kmeans(df, columns, clusters=5)
+```
+![](img/Figure_1.png)  
+
+### conclusions
+- all features to train, needs to be numeric
+- break data into train and test set
+
+1. kmeans model creation
+   - select cluster number
+      - you could train several times with different cluster numbers
+   - select random state
+      - is for keep the same train out for each run
+
+2. kmeans model fit
+   - fit the model with the data
+
+3. kmeans model predict
+   - predict the cluster for each data
+
+# hierarchical clustering
+calculate distances (euclidean distance) in a hierarchical way
+1. between records
+2. between records and groups
+3. between groups
+![](img/hirarchical_clustering.png)  
+![](img/88672png)  
+
+```python
+import pandas as pd
+import numpy as np
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+df = pd.read_csv("base_datos_2008.csv", nrows = 10000)
+columns = ["AirTime", "Distance", "TaxiOut", "ArrDelay", "DepDelay"]
+
+df = df[columns].dropna()
+
+x_train, x_test = train_test_split(df[columns], random_state=0, test_size=0.2)
+
+model_hierarchical_cluster = AgglomerativeClustering(
+   n_clusters = 5,
+   affinity = "euclidean",
+   linkage = "ward",
+   compute_full_tree = "auto"
+)
+model_hierarchical_cluster.fit(x_train)
+predictions = model_hierarchical_cluster.fit_predict(x_train)
+
+print(f"labels : {model_hierarchical_cluster.labels_}")
+print(f"predictions : {predictions[:50]}")
+
+plt.scatter(x_train[columns[0]], x_train[columns[1]], c=predictions)
+plt.show()  
+
+predictions_test = model_hierarchical_cluster.fit_predict(x_test)
+predictions_test
+```
+![](img/Figure_2.png)  
+### conclusions
+- ram consumption is a fact to take care
+- it generates a n*n matrix to calculate each distance
+
+# linear regression
+- the mean error tendency -> 0
+- the idea is minimize the ECM
+![](img/regresion_lineal.png)  
+  
+```python
+import pandas as pd
+import numpy as np
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("base_datos_2008.csv")
+df = df.dropna(subset = ["DepDelay", "ArrDelay"])
+
+x_column = ["DepDelay"]
+y_column = ["ArrDelay"]
+
+X = df[x_column]
+Y = df[y_column]
+
+x_train, x_test, y_train, y_test = train_test_split(X, Y, random_state=0, test_size=0.2)
+
+model_regression = linear_model.LinearRegression()
+model_regression.fit(x_train,y_train)
+
+print(f"coefficients : {model_regression.coef_}")
+y_pred = model_regression.predict(x_test)
+
+print("R squared: %.2f" % r2_score(y_test, y_pred))
+
+plt.scatter(X[1:10000], Y[1:10000], color='black')
+plt.plot(X[1:10000], model_regression.predict(X[1:10000]), color="blue")
+plt.show()
+```
+
+### conclusions
+- r2_score is use to check how accurate the model is
+
+# linear regression for categorical variables
+```python
+import pandas as pd
+import numpy as np
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("base_datos_2008.csv", nrows=100000)
+
+x_column = ["DepDelay"]
+y_column = ["ArrDelay"]
+
+df = df.dropna(subset=["AirTime", "Distance", "TaxiIn", "TaxiOut"])
+X = df[["AirTime", "Distance", "TaxiIn", "TaxiOut"]]
+Y = df[y_column]
+
+df["Month"] = df["Month"].apply(str)
+df["DayofMonth"] = df["DayofMonth"].apply(str)
+df["DayOfWeek"] = df["DayOfWeek"].apply(str)
+
+dummies = pd.get_dummies(data=df[["Month", "DayofMonth", "DayOfWeek", "Origin", "Dest"]])
+
+X = dummies.add(X, fill_value=0)
+X.columns.values
+X = X.add(df[["DepDelay"]], fill_value=0)
+
+model_regression_categorical = linear_model.LinearRegression()
+model_regression_categorical.fit(X,Y)
+y_pred = model_regression_categorical.predict(X)
+print(f"coefficients : {model_regression_categorical.coef_}")
+print("R squared: %.2f" % r2_score(Y, y_pred))
+```
+
+### conclusions
+- include numerical variables as well to explain most of the data
+
+# logistic regression
+![](img/logistic.png)  
+the classification could be done in N categories
+
+```python
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+df = pd.read_csv("base_datos_2008.csv", nrows=100000)
+df = df.dropna(subset=["ArrDelay"])
+df = df.sample(frac=1)
+X = df[["DepDelay"]]
+Y = df["ArrDelay"] < 30
+model_logistic_regression = LogisticRegression()
+model_logistic_regression.fit(X,Y)
+y_pred = model_logistic_regression.predict(X)
+
+np.round(model_logistic_regression.predict_proba(X), 3)
+np.mean(y_pred == Y)
+np.mean(Y)
+
+model_confusion_matrix = confusion_matrix(Y, y_pred)
+print(model_confusion_matrix)
+```
+![](img/59721.png)  
+
+### conclusions  
+- the main diagonal contains the correct answer, positive and negative
+- you need to create a categorical or boolean variable for Y
+
+# Naive-bayes
+assumptions: 
+- each variable is independent of the others
+
+![](img/naive.png)  
+# BernoulliNB
+
+```python
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import GaussianNB
+import numpy as np
+import pandas as pd
+df = pd.read_csv("base_datos_2008.csv", nrows=100000)
+df = df.sample(frac=1)
+df = df.dropna(subset=["ArrDelay"])
+Y = df["ArrDelay"] > 0
+
+df["Month"] = df["Month"].apply(str)
+df["DayofMonth"] = df["DayofMonth"].apply(str)
+df["DayOfWeek"] = df["DayOfWeek"].apply(str)
+df["TailNum"] = df["TailNum"].apply(str)
+x = pd.get_dummies(data=df[["Month", "DayofMonth", "DayOfWeek", "TailNum", "Origin", "Dest", "UniqueCarrier"]])
+
+clf = BernoulliNB()
+clf.fit(x, Y)
+y_pred = clf.predict(x)
+np.mean(Y == y_pred)
+```
+### conclusions
+- useful for categorical variables
+
+# Gaussian naive bayes
+```python
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import GaussianNB
+import numpy as np
+import pandas as pd
+df = pd.read_csv("base_datos_2008.csv", nrows=100000)
+df = df.sample(frac=1)
+df = df.dropna(subset=["ArrDelay"])
+Y = df["ArrDelay"] > 0
+X = df[["AirTime", "Distance", "TaxiIn", "TaxiOut"]]
+clf = GaussianNB()
+clf.fit(X, Y)
+y_pred = clf.predict(X)
+np.mean(Y == y_pred)
+```
+### conclusions
+- useful for numerical input variables
+- for both cases the Y variable must be categorical or boolean
+
+# Decision tree
+![](img/84381.png)  
+
+# DecisionTreeClassifier
+is useful for categorical, similar to naive models, the Y variable should be categorical or boolean
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeRegressor
+import numpy as np
+import pandas as pd
+from sklearn.metrics import r2_score
+
+x_columns = ["Distance", "AirTime", "DepTime", "TaxiIn", "TaxiOut", "DepDelay"]
+
+df = pd.read_csv("base_datos_2008.csv")
+df = df.sample(frac=1)
+df = df.dropna(subset=["ArrDelay"])
+Y = df["ArrDelay"] > 10
+
+x_train, x_test, y_train, y_test = train_test_split(df[columns], Y, random_state=0, test_size=0.2)
+
+clf = DecisionTreeClassifier()
+clf = clf.fit(x_train, y_train)
+
+Y_pred = clf.predict(x_train)
+np.mean(y_train == Y_pred)
+
+Y_pred_test = clf.predict(x_test)
+np.mean(y_test  == Y_pred_test)
+```
+### conclusions  
+- useful when "Y" is a categorical value, X could be numerical
+
+# DecisionTreeRegressor
+```python
+from sklearn.tree import DecisionTreeRegressor
+import numpy as np
+import pandas as pd
+from sklearn.metrics import r2_score
+
+x_columns = ["Distance", "AirTime", "DepTime", "TaxiIn", "TaxiOut", "DepDelay"]
+
+df = pd.read_csv("base_datos_2008.csv")
+df = df.sample(frac=1)
+df = df.dropna(subset=["ArrDelay"])
+Y = df["ArrDelay"]
+
+x_train, x_test, y_train, y_test = train_test_split(df[columns], Y, random_state=0, test_size=0.2)
+
+clf = DecisionTreeRegressor()
+clf = clf.fit(x_train, y_train)
+
+Y_pred = clf.predict(x_train)
+np.mean(y_train == Y_pred)
+
+Y_pred_test = clf.predict(x_test)
+np.mean(y_test  == Y_pred_test)
+```
+- useful when "Y" is a numerical value, X could be numerical
+
+# Random forest
+there are two types of random forest:
+- regression: when Y is numeric
+- classification: when Y is categorical
+
+both of them let you work with numerical X
+
+# RandomForestClassifier
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("base_datos_2008.csv", nrows = 100000)
+df = df.dropna(subset=["ArrDelay"])
+df = df.sample(frac=1)
+
+x_columns = ["Distance", "AirTime", "DepTime", "TaxiIn", "TaxiOut", "DepDelay"]
+
+X = df[x_columns]
+Y = df["ArrDelay"] > 10
+
+x_train, x_test, y_train, y_test = train_test_split(X, Y, random_state=0, test_size=0.2)
+
+clf = RandomForestClassifier(n_estimators=100)
+clf.fit(X, Y)
+y_pred_test = clf.predict(x_test)
+np.mean(y_test == y_pred_test)
+
+print(f"feature_importances {clf.feature_importances_}")
+```
+
+# RandomForestRegressor
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("base_datos_2008.csv", nrows = 100000)
+df = df.dropna(subset=["ArrDelay"])
+df = df.sample(frac=1)
+
+x_columns = ["Distance", "AirTime", "DepTime", "TaxiIn", "TaxiOut", "DepDelay"]
+
+X = df[x_columns]
+Y = df["ArrDelay"]
+
+x_train, x_test, y_train, y_test = train_test_split(X, Y, random_state=0, test_size=0.2)
+
+clf = RandomForestRegressor(n_estimators=100)
+clf.fit(X, Y)
+y_pred_test = clf.predict(x_test)
+np.mean(y_test == y_pred_test)
+
+print(f"feature_importances {clf.feature_importances_}")
+```
+
+# Support vector machine
+
+# support vector machine classifier
+```python
+from sklearn.svm import SVC
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("base_datos_2008.csv", nrows = 1000)
+df = df.dropna(subset=["ArrDelay"])
+df = df.sample(frac=1)
+
+x_columns = ["Distance", "AirTime", "DepTime", "TaxiIn", "TaxiOut", "DepDelay"]
+
+X = df[x_columns]
+Y = df["ArrDelay"] > 10
+
+x_train, x_test, y_train, y_test = train_test_split(X, Y, random_state=0, test_size=0.2)
+
+clf = SVC()
+clf.fit(X, Y)
+y_pred = clf.predict(x_test)
+np.mean(y_test == y_pred)
+
+clf = SVC(kernel="linear")
+clf.fit(X, Y)
+y_pred = clf.predict(x_test)
+np.mean(y_test == y_pred)
+
+clf = SVC(kernel="sigmoid")
+clf.fit(X, Y)
+y_pred = clf.predict(x_test)
+np.mean(y_test == y_pred)
+```
+
+# support vector machine regressor
+```python
+from sklearn.svm import SVR
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+df = pd.read_csv("base_datos_2008.csv", nrows = 1000)
+df = df.dropna(subset=["ArrDelay"])
+df = df.sample(frac=1)
+
+x_columns = ["Distance", "AirTime", "DepTime", "TaxiIn", "TaxiOut", "DepDelay"]
+
+X = df[x_columns]
+Y = df["ArrDelay"] 
+
+x_train, x_test, y_train, y_test = train_test_split(X, Y, random_state=0, test_size=0.2)
+
+clf = SVR()
+clf.fit(X, Y)
+y_pred = clf.predict(x_test)
+np.mean(y_test == y_pred)
+
+clf = SVR(kernel="linear")
+clf.fit(X, Y)
+y_pred = clf.predict(x_test)
+np.mean(y_test == y_pred)
+
+clf = SVR(kernel="poly")
+clf.fit(X, Y)
+y_pred = clf.predict(x_test)
+np.mean(y_test == y_pred)
+```
+
+
+# knn
+![](img/79965.png)  
+```python
+from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("base_datos_2008.csv", nrows = 100000)
+df = df[["AirTime", "Distance", "TaxiOut", "ArrDelay"]].dropna()
+df["ArrDelay"] = df["ArrDelay"].apply(lambda x: "Delayed" if x > 10 else "Not Delayed") 
+
+X = df[["AirTime", "Distance", "TaxiOut"]]
+Y = df["ArrDelay"]
+
+model_knn = KNeighborsClassifier(n_neighbors=3)
+model_knn.fit(X, Y)
+y_predict  = model_knn.predict(cols)
+
+np.mean(y_predict == Y)
+np.mean(Y == "Not Delayed")
+
+from sklearn.metrics import confusion_matrix
+confusion_matrix  = confusion_matrix(Y, predictions)
+confusion_matrix 
+```
+### conclusions
+1. calculate distance between the new point and all the points
+2. select the k nearest points
+3. assign the new point to the majority group
+
+# Spark
+![](img/23896.png)  
+
+# PySpark
+
+# Map reduce
+- lineal scalability 
+- write to disk map-reduce results
+
+# DAG (Directed Acyclic Graph)
+# resilient databases
+
+```python
+docker run -it --name pyspark apache/spark-py:v3.3.0 /opt/spark/bin/pyspark
+# from pyspark import SparkConf, SparkContext
+# conf = SparkConf().setMaster("local").setAppName("My App")
+# sc = SparkContext(conf=conf)
+lines = sc.textFile("test.txt")
+lines
+lines.count()
+lines.first()
+
+lines2 = lines.sample(fraction = 0.1, withReplacement = False)
+lines2.first()
+lines2.count()
+```
+### conclusions
+- run with docker to make sure that the spark is running
+
+# RDD (Resilient Distributed Database)
+1. actions (immutable)
+2. lazy operation
+3. GAD optimized
+4. back to states
+5. desired RDD
+
+# spark operation
+use spark filter to filter the data
+
+```python
+result = lines.filter(lambda line: "1" in line)
+result
+result.count()
+result.take(3)
+
+import re
+lines.filter(lambda x: re.search(r"[3-9]", x)).count()
+
+numbers = lines.filter(lambda x: "1" in x)
+numbers.persist()
+```
+### conclusions
+- use persist to save the operation
+
+```shell
+docker cp base_datos_2008.csv pyspark:/opt/spark/work-dir
+docker exec -it -u 0 pyspark bash
+python3 -m pip install pandas
+```
+
+# Spark: reading csv files
+- you don't use pandas in this case
+- you need to use an sqlContext
+
+```python
+from pyspark.sql.types import StringType
+from pyspark import SQLContext
+import pandas as pd
+sqlContext = SQLContext(sc)
+
+dfspark = sqlContext.read.format("csv").option("header", "true").option("inferSchema", "true").load("base_datos_2008.csv")
+
+
+dfspark.show(2)
+dfspark.head(2)
+dfspark.count()
+
+dfspark = dfspark.sample(fraction=00.1, withReplacement=False)
+dfspark.count()
+
+dfspark = dfspark.withColumn("ArrDelay", dfspark["ArrDelay"].cast("integer"))
+df2 = dfspark.na.drop(subset = ["ArrDelay", "DepDelay", "Distance"])
+df2 = df2.filter("ArrDelay is not NULL")
+df2.count()
+
+df2.printSchema()
+
+import numpy as np
+media = np.mean(df2.select("ArrDelay").collect())
+media
+df2.rdd.getNumPartitions()
+```
+### conclusions
+- you could configure the partitions
+
+# spark transformations
+```python
+from pyspark import SQLContext
+import numpy as np
+dfspark = sqlContext.read.format("csv").option("header", "true").option("inferSchema", "true").load("base_datos_2008.csv")
+dfspark = dfspark.sample(fraction=00.1, withReplacement=False)
+dfspark = dfspark.withColumn("ArrDelay", dfspark["ArrDelay"].cast("integer"))
+
+df2 = dfspark.na.drop(subset = ["ArrDelay", "DepDelay", "Distance"])
+df2 = df2.filter("ArrDelay is not NULL")
+df2 = df2.dropDuplicates()
+
+df2.select("ArrDelay").filter("ArrDelay > 60").take(5)
+
+df2.filter("ArrDelay > 100").count()
+
+media = np.mean(df2.select("ArrDelay").collect())
+df2.select("ArrDelay").rdd.map(lambda x: (x-media)**2).take(10)
+df2.groupBy("DayOfWeek").count().show()
+
+df2.groupBy("DayOfWeek").mean("ArrDelay").show()
+df2.select("Origin").rdd.distinct().take(5)
+
+df2.orderBy(df2.ArrDelay.desc()).take(5)
+```
+### conclusions
+- np.f(df.select("Column").collect())
+   - useful for summarize some data
+
+# Spark: describe stats by column
+```python
+dfspark = sqlContext.read.format("csv").option("header", "true").option("inferSchema", "true").load("base_datos_2008.csv")
+dfspark = dfspark.sample(fraction=00.1, withReplacement=False)
+dfspark = dfspark.withColumn("ArrDelay", dfspark["ArrDelay"].cast("integer"))
+
+df2 = dfspark.na.drop(subset = ["ArrDelay", "DepDelay", "Distance"])
+df2 = df2.filter("ArrDelay is not NULL")
+df2 = df2.dropDuplicates()
+
+df2.select("ArrDelay").describe().show()
+df2.select("Origin").rdd.countByValue()
+
+df2.select("ArrDelay").rdd.max()
+df2.select("ArrDelay").rdd.collect()
+
+df2.crosstab("DayOfWeek", "Origin").take(2)
+```
+- in general you could use describe method to get all stats for column, you  need to combine this with a select
+- to find max, min and so on, you kneed to apply an rdd first
+
+# Spark: numeric operations
+```python
+dfspark = sqlContext.read.format("csv").option("header", "true").option("inferSchema", "true").load("base_datos_2008.csv")
+dfspark = dfspark.sample(fraction=00.1, withReplacement=False)
+dfspark = dfspark.withColumn("ArrDelay", dfspark["ArrDelay"].cast("integer"))
+
+df2 = dfspark.na.drop(subset = ["ArrDelay", "DepDelay", "Distance"])
+df2 = df2.filter("ArrDelay is not NULL")
+df2 = df2.dropDuplicates()
+
+lista = sc.parallelize(range(1, 1000000))
+lista.reduce(lambda x,y: x+y)
+
+from pyspark.sql.functions import mean, stddev, col
+media = df2.select(mean(col("ArrDelay"))).collect()
+std = df2.select(stddev(col("ArrDelay"))).collect()[0][0]
+
+df2.withColumn("Diferencia", df2["ArrDelay"] - df2["DepDelay"]).collect()
+```
+- you can parallelize function over lot of data using sc.parallelize
+
+# Spark: join
+useful to work with spark lists
+```python
+x = sc.parallelize([("a", 5), ("b", 6), ("c", 7), ("d", 8)])
+y = sc.parallelize([("a", 1), ("b", 2), ("c", 3)])
+x.join(y).collect()
+y.join(x).collect()
+y.leftOuterJoin(x).collect()
+x.leftOuterJoin(y).collect()
+y.rightOuterJoin(x).collect()
+```
+- you could work with inner, left and right
+
+# Spark: accumulators
+```python
+lines = sc.textFile("test.txt")
+one = sc.accumulator(0)
+two = sc.accumulator(0)
+
+def one_counter(line):
+   global one, two
+   if "1" in line:
+      one += 1
+      return True
+   if "2" in line:
+      two += 1
+      return True
+   else:
+      return False
+
+valores=lines.filter(one_counter)
+valores
+
+one
+two
+```
+
+# Spark: map - reduce
+map: process a partition
+reduce: sum the partition results
+```python
+dfspark = sqlContext.read.format("csv").option("header", "true").option("inferSchema", "true").load("base_datos_2008.csv")
+dfspark = dfspark.sample(fraction=00.1, withReplacement=False)
+dfspark = dfspark.withColumn("ArrDelay", dfspark["ArrDelay"].cast("integer"))
+
+df2 = dfspark.na.drop(subset = ["ArrDelay", "DepDelay", "Distance"])
+df2 = df2.filter("ArrDelay is not NULL")
+df2 = df2.dropDuplicates()
+
+A = sc.parallelize(df2.select("Origin").rdd.collect())
+A.persist()
+
+mapfunction = A.map(lambda x: (x,1))
+mapfunction.collect()
+
+def fun_weight(x):
+   if x[0] in ["SEA", "ATL", "HOU"]:
+      return ((x, 2))
+   elif x[0] == "DEN":
+      return ((x, 3))
+   else:
+      return ((x,1))
+
+A.map(fun_weight).collect()
+
+reduceF = A.map(fun_weight).reduceByKey(lambda x,y: x+y)
+reduceF.collect()
+
+reduceF.sortByKey().take(10)
+reduceF.sortBy(lambda x:x[1], ascending=False).take(10)
+
+def count_numbers(x):
+   if "1" in x: return ("count", (1, 0, 0))
+   if "2" in x: return ("count", (0, 1, 0))
+   if "3" in x: return ("count", (0, 0, 1))
+   return ("count", (0, 0, 0))
+
+mapfunc = lines.map(count_numbers)
+mapfunc.reduceByKey(lambda x, y: (x[0]+y[0], x[1]+y[1], x[2]+y[2])).collect()
+```
